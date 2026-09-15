@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMES | Plataforma Digital Integrada</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">E</div>
+          <div>
+            <strong>EMES</strong>
+            <span>Plataforma Digital Integrada</span>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Navegação principal">
+          <button class="nav-btn active" data-view="home">Homepage</button>
+          <button class="nav-btn" data-view="parking">Estacionar</button>
+          <button class="nav-btn" data-view="profiles">Utilizadores</button>
+          <button class="nav-btn" data-view="services">Serviços online</button>
+          <button class="nav-btn" data-view="updates">Atualizações</button>
+          <button class="nav-btn" data-view="support">Apoio</button>
+          <button class="nav-btn" data-view="backoffice">Backoffice</button>
+        </nav>
+
+        <div class="user-menu">
+          <button class="secondary-btn" data-view="mobile">App Mobile</button>
+          <button class="primary-btn" id="loginToggle">Entrar / Conta</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="view active" id="homeView">
+          <div class="hero">
+            <div>
+              <div class="eyebrow">Mobilidade urbana inteligente</div>
+              <h1>Estacionamento digital mais simples e transparente</h1>
+              <p>
+                Acesse zonas, pagamentos, dísticos e informações em tempo real com uma
+                experiência pensada para residentes, trabalhadores e visitantes.
+              </p>
+              <div class="cta-row">
+                <button class="primary-btn" data-view="parking">Estacionar agora</button>
+                <button class="secondary-btn" data-view="services">Pagar estacionamento</button>
+              </div>
+            </div>
+            <div class="hero-panel">
+              <div class="metric-box">
+                <span>Disponibilidade</span>
+                <strong id="availabilityMetric">92%</strong>
+              </div>
+              <div class="metric-box">
+                <span>Zonas ativas</span>
+                <strong>27</strong>
+              </div>
+              <div class="metric-box highlighted">
+                <span>Tempo médio de resposta</span>
+                <strong>&lt; 1s</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid home-grid">
+            <div class="panel map-panel">
+              <div class="panel-header">
+                <h2>Mapa de estacionamento</h2>
+                <span class="tag success">Online</span>
+              </div>
+              <div class="search-bar">
+                <input id="searchInput" type="text" placeholder="Pesquisar por morada, zona ou parque" />
+                <button class="primary-btn small" id="searchBtn">Pesquisar</button>
+              </div>
+              <div class="filters-row">
+                <label><input type="checkbox" class="filter-check" data-filter="price" checked /> Preço</label>
+                <label><input type="checkbox" class="filter-check" data-filter="distance" checked /> Distância</label>
+                <label><input type="checkbox" class="filter-check" data-filter="availability" checked /> Disponibilidade</label>
+              </div>
+
+              <div class="map-area">
+                <div class="map-grid"></div>
+                <div class="map-overlay">
+                  <div class="map-card">
+                    <span>Parque selecionado</span>
+                    <strong id="selectedParkName">Parque da Fonte</strong>
+                    <small id="selectedParkMeta">10 vagas livres · 4 min</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="panel list-panel">
+              <div class="panel-header">
+                <h2>Parques próximos</h2>
+              </div>
+              <div id="parkList" class="result-list"></div>
+            </aside>
+          </div>
+
+          <div class="feature-strip">
+            <div class="feature-card">
+              <span class="feature-icon">🅿️</span>
+              <strong>Estacionar agora</strong>
+              <p>Filtrar parques, ver disponibilidade e confirmar a melhor opção.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">💳</span>
+              <strong>Pagamentos online</strong>
+              <p>MB Way, Multibanco e cartão em um fluxo rápido e seguro.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">🧾</span>
+              <strong>Área do utilizador</strong>
+              <p>Histórico, veículos, faturação e notificações em um só local.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="parkingView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Fluxo principal</div>
+              <h2>Estacionar agora</h2>
+            </div>
+          </div>
+
+          <div class="two-column-layout">
+            <div class="panel">
+              <h3>Selecionar parque</h3>
+              <div class="parking-list" id="parkingList"></div>
+            </div>
+            <div class="panel">
+              <h3>Detalhe da zona</h3>
+              <div id="parkDetail" class="park-detail-card"></div>
+              <div class="action-box">
+                <button class="primary-btn" id="directionBtn">Como chegar</button>
+                <button class="secondary-btn" id="saveBtn">Guardar opção</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="profilesView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Personalização</div>
+              <h2>Perfis de utilizador</h2>
+            </div>
+          </div>
+
+          <div class="profile-selector">
+            <button class="profile-chip active" data-profile="resident">Residente</button>
+            <button class="profile-chip" data-profile="worker">Trabalhador</button>
+            <button class="profile-chip" data-profile="visitor">Visitante</button>
+          </div>
+
+          <div class="profile-panels">
+            <div class="panel profile-panel active" data-panel="resident">
+              <h3>Área do residente</h3>
+              <form id="disticForm" class="form-grid">
+                <div class="field">
+                  <label>Nome</label>
+                  <input name="name" type="text" placeholder="Nome completo" required />
+                </div>
+                <div class="field">
+                  <label>NIF</label>
+                  <input name="nif" type="text" placeholder="123456789" required />
+                </div>
+                <div class="field span-2">
+                  <label>Morada</label>
+                  <input name="address" type="text" placeholder="Rua, nº, localidade" required />
+                </div>
+                <div class="field">
+                  <label>Zona pretendida</label>
+                  <select name="zone">
+                    <option>Centro</option>
+                    <option>Santa Maria</option>
+                    <option>Colares</option>
+                    <option>Sintra</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Documentos</label>
+                  <input name="document" type="file" />
+                </div>
+                <div class="field span-2">
+                  <button class="primary-btn" type="submit">Submeter pedido de dístico</button>
+                </div>
+              </form>
+              <div id="disticFeedback" class="form-feedback"></div>
+            </div>
+
+            <div class="panel profile-panel" data-panel="worker">
+              <h3>Área do trabalhador / comerciante</h3>
+              <div class="mini-grid">
+                <div class="mini-card">
+                  <span>Zonas atribuídas</span>
+                  <strong>Zona Comercial Norte</strong>
+                </div>
+                <div class="mini-card">
+                  <span>Elegibilidade</span>
+                  <strong>Válida</strong>
+                </div>
+                <div class="mini-card">
+                  <span>Horário</span>
+                  <strong>08:00 - 20:00</strong>
+                </div>
+                <div class="mini-card">
+                  <span>Veículo</span>
+                  <strong>Associado: 80-AA-15</strong>
+                </div>
+              </div>
+              <form id="vehicleForm" class="form-grid compact-grid">
+                <div class="field">
+                  <label>Matrícula</label>
+                  <input name="plate" type="text" placeholder="AA-00-AA" required />
+                </div>
+                <div class="field">
+                  <label>Tipo</label>
+                  <select name="type">
+                    <option>Carro</option>
+                    <option>Mota</option>
+                    <option>Van</option>
+                  </select>
+                </div>
+                <div class="field span-2">
+                  <button class="primary-btn" type="submit">Associar veículo</button>
+                </div>
+              </form>
+              <div id="vehicleFeedback" class="form-feedback"></div>
+            </div>
+
+            <div class="panel profile-panel" data-panel="visitor">
+              <h3>Área do visitante</h3>
+              <div class="visitor-actions">
+                <button class="secondary-btn" data-view="parking">Consultar parques</button>
+                <button class="secondary-btn" data-view="services">Pagar estacionamento</button>
+                <button class="secondary-btn" data-view="updates">Ver atualizações</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="servicesView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Operações digitais</div>
+              <h2>Serviços online</h2>
+            </div>
+          </div>
+
+          <div class="services-grid">
+            <div class="panel">
+              <h3>Pagamento</h3>
+              <form id="paymentForm" class="form-grid">
+                <div class="field">
+                  <label>Parque</label>
+                  <select name="park">
+                    <option>Parque da Fonte</option>
+                    <option>Parque do Mercado</option>
+                    <option>Parque da Estação</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Valor (€)</label>
+                  <input name="amount" type="number" step="0.01" value="3.50" required />
+                </div>
+                <div class="field">
+                  <label>Método</label>
+                  <select name="method">
+                    <option>MB Way</option>
+                    <option>Multibanco</option>
+                    <option>Cartão</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Referência</label>
+                  <input name="reference" type="text" placeholder="999999999" required />
+                </div>
+                <div class="field span-2">
+                  <button class="primary-btn" type="submit">Confirmar pagamento</button>
+                </div>
+              </form>
+              <div id="paymentFeedback" class="form-feedback"></div>
+            </div>
+
+            <div class="panel">
+              <h3>Extensão de estacionamento</h3>
+              <form id="extendForm" class="form-grid">
+                <div class="field">
+                  <label>Tempo</label>
+                  <select name="minutes">
+                    <option value="30">30 minutos</option>
+                    <option value="60">1 hora</option>
+                    <option value="120">2 horas</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Parque</label>
+                  <select name="park">
+                    <option>Parque da Fonte</option>
+                    <option>Parque do Mercado</option>
+                    <option>Parque da Estação</option>
+                  </select>
+                </div>
+                <div class="field span-2">
+                  <button class="secondary-btn" type="submit">Extender</button>
+                </div>
+              </form>
+              <div id="extendFeedback" class="form-feedback"></div>
+            </div>
+
+            <div class="panel">
+              <h3>Veículos</h3>
+              <ul id="vehicleList" class="list-rows"></ul>
+            </div>
+
+            <div class="panel">
+              <h3>Faturas</h3>
+              <ul id="invoiceList" class="list-rows"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="updatesView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Comunicação</div>
+              <h2>Atualizações</h2>
+            </div>
+          </div>
+
+          <div class="updates-layout">
+            <div class="panel">
+              <ul id="newsList" class="news-list"></ul>
+            </div>
+            <div class="panel">
+              <div id="newsDetail" class="news-detail"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="supportView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Assistência</div>
+              <h2>Apoio ao utilizador</h2>
+            </div>
+          </div>
+
+          <div class="support-layout">
+            <div class="panel">
+              <h3>FAQ</h3>
+              <div class="faq-list">
+                <div class="faq-item">
+                  <strong>Como pagar o estacionamento?</strong>
+                  <p>Use a área de serviços online e confirme o pagamento em segundos.</p>
+                </div>
+                <div class="faq-item">
+                  <strong>Como solicitar um dístico?</strong>
+                  <p>Acesse a área do residente e submeta o formulário com os documentos.</p>
+                </div>
+                <div class="faq-item">
+                  <strong>Como reportar um problema?</strong>
+                  <p>Use o formulário de apoio e a equipa responderá no prazo mais curto.</p>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Contacte-nos</h3>
+              <form id="supportForm" class="form-grid">
+                <div class="field">
+                  <label>Tipo</label>
+                  <select name="type">
+                    <option>Contacto</option>
+                    <option>Reporte</option>
+                    <option>Pedido de informação</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Email</label>
+                  <input name="email" type="email" placeholder="nome@exemplo.pt" required />
+                </div>
+                <div class="field span-2">
+                  <label>Mensagem</label>
+                  <textarea name="message" rows="5" required></textarea>
+                </div>
+                <div class="field span-2">
+                  <button class="primary-btn" type="submit">Enviar pedido</button>
+                </div>
+              </form>
+              <div id="supportFeedback" class="form-feedback"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="backofficeView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Gestão operacional</div>
+              <h2>Backoffice</h2>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span>Pedidos pendentes</span>
+              <strong id="pendingRequestsCount">12</strong>
+            </div>
+            <div class="stat-box">
+              <span>Pagamentos</span>
+              <strong id="paymentsCount">46</strong>
+            </div>
+            <div class="stat-box">
+              <span>Parques ativos</span>
+              <strong>18</strong>
+            </div>
+            <div class="stat-box">
+              <span>Disponibilidade</span>
+              <strong>92%</strong>
+            </div>
+          </div>
+
+          <div class="backoffice-grid">
+            <div class="panel">
+              <h3>Gestão de pedidos</h3>
+              <ul id="adminRequests" class="list-rows"></ul>
+            </div>
+            <div class="panel">
+              <h3>Relatórios</h3>
+              <ul class="report-list">
+                <li>Faturação mensal: € 42.800</li>
+                <li>Ocupação média: 73%</li>
+                <li>Tempo de resposta: 0.9s</li>
+                <li>Incidentes: 3</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="mobileView">
+          <div class="view-header">
+            <div>
+              <div class="eyebrow">Aplicação móvel</div>
+              <h2>Experiência mobile</h2>
+            </div>
+          </div>
+
+          <div class="mobile-shell">
+            <div class="phone-frame">
+              <div class="phone-header">
+                <span>9:41</span>
+                <span>EMES</span>
+                <span>📶</span>
+              </div>
+              <div class="phone-body">
+                <div class="phone-card accent">
+                  <small>Disponibilidade</small>
+                  <strong>12 vagas próximas</strong>
+                </div>
+                <div class="quick-actions">
+                  <button>Estacionar</button>
+                  <button>Mapa</button>
+                  <button>Conta</button>
+                </div>
+                <div class="phone-list">
+                  <div class="phone-item">
+                    <span>Parque da Fonte</span>
+                    <strong>10 vagas</strong>
+                  </div>
+                  <div class="phone-item">
+                    <span>Mercado</span>
+                    <strong>5 vagas</strong>
+                  </div>
+                  <div class="phone-item">
+                    <span>Estação</span>
+                    <strong>Cheio</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="loginModal" class="modal hidden" aria-modal="true" role="dialog">
+      <div class="modal-card">
+        <button class="close-modal" type="button" aria-label="Fechar modal">✕</button>
+        <h3>Login na conta</h3>
+        <form id="loginForm" class="form-grid">
+          <div class="field">
+            <label>Email</label>
+            <input type="email" value="ana@emes.pt" required />
+          </div>
+          <div class="field">
+            <label>Palavra-passe</label>
+            <input type="password" value="emes123" required />
+          </div>
+          <div class="field span-2">
+            <button class="primary-btn" type="submit">Entrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
