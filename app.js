@@ -4,6 +4,8 @@ const state = {
   activeView: 'home',
   loggedIn: false,
   dashboardName: 'Ana Silva',
+  map: null,
+  markers: [],
   parks: [
     {
       id: 1,
@@ -15,7 +17,8 @@ const state = {
       status: 'Disponível',
       tariff: 'Até 2h · €2,50/h',
       rules: 'Zona tarifada, acesso para residentes e visitantes.',
-      description: 'Parque central com boa mobilidade e acesso direto à biblioteca municipal.'
+      description: 'Parque central com boa mobilidade e acesso direto à biblioteca municipal.',
+      location: [38.8032, -9.3908]
     },
     {
       id: 2,
@@ -27,7 +30,8 @@ const state = {
       status: 'Quase cheio',
       tariff: 'Até 3h · €1,80/h',
       rules: 'Pagamento via app e acesso prioritário para trabalhadores.',
-      description: 'Parque mais próximo do mercado municipal e da zona comercial.'
+      description: 'Parque mais próximo do mercado municipal e da zona comercial.',
+      location: [38.7813, -9.3870]
     },
     {
       id: 3,
@@ -39,7 +43,8 @@ const state = {
       status: 'Cheio',
       tariff: 'Sem vagas disponíveis no momento',
       rules: 'Sugestão de estacionamento alternativo na zona adjacente.',
-      description: 'Parque ligado à estação e ao centro de negócios da cidade.'
+      description: 'Parque ligado à estação e ao centro de negócios da cidade.',
+      location: [38.7990, -9.3609]
     }
   ],
   vehicles: [
@@ -108,6 +113,66 @@ function setView(name) {
   state.activeView = name;
   elements.views.forEach((view) => view.classList.toggle('active', view.id === `${name}View`));
   elements.navButtons.forEach((button) => button.classList.toggle('active', button.dataset.view === name));
+}
+
+function initMap() {
+  if (!window.L) return;
+
+  state.map = L.map('map', {
+    zoomControl: true,
+    scrollWheelZoom: true
+  }).setView([38.7974, -9.3816], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(state.map);
+
+  state.markers = state.parks.map((park) => {
+    const marker = L.marker(park.location).addTo(state.map);
+    marker.bindPopup(`${park.name}<br>${park.availability} vagas livres`);
+    marker.on('click', () => {
+      state.selectedPark = state.parks.findIndex((item) => item.name === park.name);
+      renderSelectedPark();
+      renderParkList();
+      renderParkingList();
+    });
+    return marker;
+  });
+
+  state.map.flyTo(state.parks[0].location, 12);
+}
+
+function searchAddress(address) {
+  if (!address || !window.fetch) {
+    alert('Introduza uma morada para pesquisar.');
+    return;
+  }
+
+  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(address)}`;
+
+  fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  })
+    .then((response) => response.json())
+    .then((results) => {
+      if (!results.length) {
+        alert('Não foi encontrada nenhuma morada. Tente outra pesquisa.');
+        return;
+      }
+
+      const result = results[0];
+      const coords = [Number(result.lat), Number(result.lon)];
+      if (state.map) {
+        state.map.flyTo(coords, 15);
+        L.marker(coords).addTo(state.map).bindPopup(`Resultado: ${result.display_name}`).openPopup();
+      }
+      alert(`Morada encontrada: ${result.display_name}`);
+    })
+    .catch(() => {
+      alert('Não foi possível consultar a morada. Tente novamente mais tarde.');
+    });
 }
 
 function renderParkList() {
@@ -264,8 +329,31 @@ function setupEvents() {
     });
   });
 
-  document.getElementById('searchBtn').addEventListener('click', renderParkList);
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    const query = document.getElementById('searchInput').value.trim();
+    if (query) {
+      searchAddress(query);
+    } else {
+      renderParkList();
+    }
+  });
+
+  document.getElementById('searchInput').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      const query = event.currentTarget.value.trim();
+      if (query) {
+        searchAddress(query);
+      }
+    }
+  });
+
   document.getElementById('searchInput').addEventListener('input', renderParkList);
+
+  document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+    const wrapper = document.querySelector('.nav-wrapper');
+    const isOpen = wrapper.classList.toggle('menu-open');
+    document.querySelector('.mobile-menu-toggle').setAttribute('aria-expanded', String(isOpen));
+  });
 
   document.getElementById('directionBtn').addEventListener('click', () => {
     const park = state.parks[state.selectedPark];
@@ -395,6 +483,7 @@ function init() {
   renderInvoices();
   renderBackoffice();
   setupEvents();
+  initMap();
   setView('home');
 }
 
